@@ -1,0 +1,93 @@
+mql5
+//+------------------------------------------------------------------+
+//|                                                   Panda Gold.mq5 |
+//|                   https://forexroboteasy.com/ by Forex Robot Easy Team |
+//|                    Fully Automated Expert Advisor for GOLD (XAUUSD) |
+//+------------------------------------------------------------------+
+
+//--- External parameters
+input int TP = 100;                                  // Take Profit in pips
+input int SL = 50;                                   // Stop Loss in pips
+input double LotSize = 0.1;                          // Lot size for each trade
+input int MaxTrades = 5;                             // Maximum number of trades
+
+//--- Global variables
+int currentTrade = 0;                                // Current trade count
+bool isTradeOpen = false;                            // Flag to check if a trade is open
+
+//+------------------------------------------------------------------+
+//| Expert Advisor initialization function                         |
+//+------------------------------------------------------------------+
+int OnInit()
+{
+   //--- Initialize variables
+   currentTrade = 0;
+   isTradeOpen = false;
+
+   return(INIT_SUCCEEDED);
+}
+
+//+------------------------------------------------------------------+
+//| Expert Advisor start function                                    |
+//+------------------------------------------------------------------+
+void OnTick()
+{
+   //--- Check if a trade is currently open
+   if (isTradeOpen)
+   {
+      //--- Check if the trade has reached the Take Profit level
+      if (OrderProfit() >= TP)
+      {
+         //--- Close the trade
+         OrderClose(OrderTicket(), OrderLots(), Bid, 0, clrGreen);
+         isTradeOpen = false;
+      }
+      //--- Check if the trade has reached the Stop Loss level
+      else if (OrderProfit() <= -SL)
+      {
+         //--- Close the trade
+         OrderClose(OrderTicket(), OrderLots(), Bid, 0, clrRed);
+         isTradeOpen = false;
+      }
+   }
+   else
+   {
+      //--- Check if the maximum number of trades has been reached
+      if (currentTrade < MaxTrades)
+      {
+         //--- Place a new trade
+         if (BuySignal())
+         {
+            //--- Open a buy trade
+            OrderSend(Symbol(), OP_BUY, LotSize, Ask, 0, Ask - SL * Point, Ask + TP * Point, 'Panda Gold', 0, 0, clrBlue);
+            isTradeOpen = true;
+            currentTrade++;
+         }
+         else if (SellSignal())
+         {
+            //--- Open a sell trade
+            OrderSend(Symbol(), OP_SELL, LotSize, Bid, 0, Bid + SL * Point, Bid - TP * Point, 'Panda Gold', 0, 0, clrRed);
+            isTradeOpen = true;
+            currentTrade++;
+         }
+      }
+   }
+}
+
+//+------------------------------------------------------------------+
+//| Function to generate buy signal                                   |
+//+------------------------------------------------------------------+
+bool BuySignal()
+{
+   //--- Add buy signal logic here
+   return true;
+}
+
+//+------------------------------------------------------------------+
+//| Function to generate sell signal                                  |
+//+------------------------------------------------------------------+
+bool SellSignal()
+{
+   //--- Add sell signal logic here
+   return true;
+}
